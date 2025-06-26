@@ -20,7 +20,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install flake8 pytest  # Added pytest installation
+          pip install flake8 pytest nose coverage  # Added nose and coverage
 
       # Node.js setup (conditional)
       - name: Check for Node project
@@ -47,9 +47,15 @@ jobs:
           flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Run Python tests
+      # Added Nose test step as specified in Exercise 3
+      - name: Run unit tests with nose
         run: |
-          python -m pytest tests/  # Specify tests directory
+          nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
+
+      # Kept existing pytest for compatibility
+      - name: Run Python tests with pytest
+        run: |
+          python -m pytest tests/
           echo "Python tests completed"
 
       # Node.js tests (conditional)
