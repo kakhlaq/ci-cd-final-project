@@ -1,0 +1,49 @@
+name: CI/CD Pipeline  # Name of your workflow
+
+on:  # Events that trigger the workflow
+  push:
+    branches: [ "main", "develop" ]  # Runs on push to these branches
+  pull_request:
+    branches: [ "main" ]  # Runs on PRs targeting these branches
+
+jobs:
+  build-and-test:  # ID of the job (can be multiple jobs)
+    name: Build and Test  # Display name
+    runs-on: ubuntu-latest  # Runner environment
+    
+    # Optional container (remove if not needed)
+    # container: node:18-alpine
+    
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      # 2. Setup language/environment (example for Node.js)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm ci  # Using npm ci for reproducible builds
+        
+      # 4. Run tests
+      - name: Run tests
+        run: |
+          npm run lint
+          npm run test:ci
+          echo "Tests completed"
+          
+      # 5. Build project (example)
+      - name: Build project
+        run: npm run build
+        
+      # 6. Optional deployment step (example)
+      - name: Deploy to staging
+        if: github.ref == 'refs/heads/main'  # Only run on main branch
+        run: |
+          echo "Deploying to staging..."
+          # Add deployment commands here
