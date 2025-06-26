@@ -29,19 +29,26 @@ jobs:
       # 3. Install dependencies
       - name: Install dependencies
         run: npm ci  # Using npm ci for reproducible builds
-        
-      # 4. Run tests
+
+      # 4. The new linting step
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+     
+      # 5. Run tests
       - name: Run tests
         run: |
           npm run lint
           npm run test:ci
           echo "Tests completed"
           
-      # 5. Build project (example)
+      # 6. Build project (example)
       - name: Build project
         run: npm run build
         
-      # 6. Optional deployment step (example)
+      # 7. Optional deployment step (example)
       - name: Deploy to staging
         if: github.ref == 'refs/heads/main'  # Only run on main branch
         run: |
